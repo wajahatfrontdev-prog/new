@@ -55,7 +55,7 @@ exports.initiateConnect = async (req, res) => {
         title: 'Instant Consultation Request',
         message: `${req.user.name} is requesting an instant consultation. Respond within 3 minutes.`,
         type: 'connect_now',
-        metadata: { requestId: request._id.toString(), channelName },
+        data: { requestId: request._id.toString(), channelName },
       });
     }
 
@@ -113,7 +113,7 @@ exports.acceptRequest = async (req, res) => {
       title: 'Doctor Joined!',
       message: `Dr. ${req.user.name} has accepted your instant consultation request.`,
       type: 'connect_now_accepted',
-      metadata: { requestId: request._id.toString(), channelName: request.channelName },
+      data: { requestId: request._id.toString(), channelName: request.channelName },
     });
 
     res.json({
@@ -223,7 +223,7 @@ async function _notifyAdmin(request) {
         title: 'No Doctor Available',
         message: `A patient's instant consultation request expired with no doctor response. Patient ID: ${request.patient}`,
         type: 'connect_now_expired',
-        metadata: { requestId: request._id.toString(), patientId: request.patient.toString() },
+        data: { requestId: request._id.toString(), patientId: request.patient.toString() },
       });
       try {
         await pusher.trigger(`private-user-${admin._id}`, 'connect-now-expired', {
