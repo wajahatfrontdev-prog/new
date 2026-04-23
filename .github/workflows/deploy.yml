@@ -1,0 +1,35 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /root/api
+
+            # Git pull
+            git pull origin main
+
+            # Kill process using port 5000 (if any)
+            fuser -k 5000/tcp || true
+
+            # Install dependencies
+            npm install --production
+
+            # Restart PM2
+            pm2 delete api-backend || true
+            pm2 start server.js --name api-backend
+            pm2 save

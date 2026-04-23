@@ -1,0 +1,7 @@
+node_modules/
+.env
+config/serviceAccountKey.json
+uploads/
+*.log
+server.log
+output.log
