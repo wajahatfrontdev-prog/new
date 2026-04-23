@@ -1,9 +1,10 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const Laboratory = require('./models/laboratory');
 const LabBooking = require('./models/labBooking');
 
-const MONGODB_URI = 'mongodb+srv://icaredev02_db_user:icaredev02@cluster0.kalraci.mongodb.net/?appName=Cluster0';
+const MONGODB_URI = process.env.MONGO_URI;
 
 async function addAsifTestData() {
     try {

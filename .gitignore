@@ -5,3 +5,5 @@ uploads/
 *.log
 server.log
 output.log
+
+.vercel
