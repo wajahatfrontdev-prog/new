@@ -8,15 +8,18 @@ exports.listPublicCourses = async (req, res) => {
   try {
     const { q } = req.query;
     const userRole = req.user.role;
-    
+
     const filter = { visibility: 'public' };
-    
-    // Enforce target audience filtering based on role
+
+    // Filter by targetAudience - show courses meant for this role OR courses for 'All'
     if (userRole === 'Patient') {
-      filter.targetAudience = 'Patient';
-    } else if (userRole === 'Doctor' || userRole === 'Student') {
-      filter.targetAudience = 'Doctor';
+      filter.$or = [{ targetAudience: 'Patient' }, { targetAudience: 'All' }, { targetAudience: { $exists: false } }, { targetAudience: null }];
+    } else if (userRole === 'Doctor') {
+      filter.$or = [{ targetAudience: 'Doctor' }, { targetAudience: 'All' }, { targetAudience: { $exists: false } }, { targetAudience: null }];
+    } else if (userRole === 'Student') {
+      filter.$or = [{ targetAudience: 'Student' }, { targetAudience: 'Doctor' }, { targetAudience: 'All' }, { targetAudience: { $exists: false } }, { targetAudience: null }];
     }
+    // Other roles (Instructor, etc.) see all public courses
 
     if (q) filter.title = { $regex: q, $options: 'i' };
     const courses = await InstructorCourse.find(filter)
