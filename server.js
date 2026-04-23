@@ -86,6 +86,7 @@ app.use("/api/forum", require("./routes/forumRoutes"));
 app.use("/api/credentials", require("./routes/credentialRoutes"));
 app.use("/api/reminders", require("./routes/remindersRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/connect-now", require("./routes/connectNowRoutes"));
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.use("/api", agoraRoutes);
 
