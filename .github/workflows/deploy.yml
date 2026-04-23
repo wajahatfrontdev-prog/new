@@ -23,6 +23,11 @@ jobs:
             # Git pull
             git pull origin main
 
+            # Create uploads directories if they don't exist
+            mkdir -p uploads/videos
+            mkdir -p uploads/chat
+            mkdir -p uploads/reports
+
             # Kill process using port 5000 (if any)
             fuser -k 5000/tcp || true
 
