@@ -30,7 +30,8 @@ const instructorCourseSchema = new mongoose.Schema({
     title: String,
     url: String
   }],
-  visibility: { type: String, enum: ['public', 'students', 'private'], default: 'public' }
+  visibility: { type: String, enum: ['public', 'students', 'private'], default: 'public' },
+  isPublished: { type: Boolean, default: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('InstructorCourse', instructorCourseSchema);

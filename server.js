@@ -25,7 +25,13 @@ validateRequiredEnvVars();
 connectDB();
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: false,
+}));
+app.options('*', cors());
 app.use("/uploads", express.static("uploads"));
 app.use(express.urlencoded({ extended: true }));
 
