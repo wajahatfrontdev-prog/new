@@ -15,14 +15,13 @@ exports.initiateConnect = async (req, res) => {
       { status: 'expired' }
     );
 
-    // Find 3 available doctors
-    const doctors = await User.find({ role: 'Doctor' }).limit(10);
+    // Find all available doctors (notify all so any logged-in doctor can respond)
+    const doctors = await User.find({ role: 'Doctor' });
     if (doctors.length === 0) {
       return res.status(404).json({ success: false, message: 'No doctors available right now' });
     }
 
-    // Pick up to 3 doctors
-    const selectedDoctors = doctors.slice(0, 3);
+    const selectedDoctors = doctors;
     const doctorIds = selectedDoctors.map(d => d._id);
 
     const channelName = `consult-${patientId}-${Date.now()}`;
