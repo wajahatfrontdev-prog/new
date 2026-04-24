@@ -58,18 +58,42 @@ exports.createCourse = async (req, res) => {
     const instructor = await Instructor.findOne({ user: userId });
     if (!instructor)
       return res.status(403).json({ message: "Instructor profile not found" });
-    const { title, caption, videos, visibility } = req.body;
+
+    const {
+      title,
+      description,
+      thumbnail,
+      duration,
+      category,
+      targetAudience,
+      difficulty,
+      healthConditions,
+      modules,
+      isPublished,
+      visibility
+    } = req.body;
+
     const course = await InstructorCourse.create({
       instructor: instructor._id,
       title,
-      caption,
-      videos: Array.isArray(videos) ? videos : [],
-      visibility: visibility || "public",
+      caption: description || '',
+      image: thumbnail || '',
+      category: category || 'HealthProgram',
+      healthCondition: healthConditions || '',
+      targetAudience: targetAudience || 'All',
+      modules: Array.isArray(modules) ? modules : [],
+      isPublished: isPublished !== undefined ? isPublished : false,
+      visibility: visibility || 'public',
     });
+
     res.status(201).json({ success: true, course });
   } catch (error) {
     console.error("Create Course Error:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+      details: error.errors
+    });
   }
 };
 
