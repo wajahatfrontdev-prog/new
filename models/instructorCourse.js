@@ -3,18 +3,29 @@ const mongoose = require('mongoose');
 const quizQuestionSchema = new mongoose.Schema({
   question: { type: String, required: true },
   options: [{ type: String, required: true }],
-  correctAnswer: { type: Number, required: true } // Index of the correct option
+  correctAnswer: { type: Number, required: true }, // Index of the correct option
+  explanation: String
 }, { _id: false });
 
 const moduleSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  description: String,
+  order: Number,
   lessons: [{
     title: String,
-    url: String,
-    description: String
+    content: String,
+    videoUrl: String,
+    duration: Number,
+    order: Number,
+    resources: [{
+      title: String,
+      url: String,
+      type: String
+    }]
   }],
   quiz: {
-    questions: [quizQuestionSchema]
+    questions: [quizQuestionSchema],
+    passingScore: { type: Number, default: 70 }
   }
 }, { _id: false });
 
