@@ -24,14 +24,19 @@ validateRequiredEnvVars();
 
 connectDB();
 const app = express();
-app.use(express.json());
+
+// CORS must be first middleware
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   credentials: false,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 app.options('*', cors());
+
+app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 app.use(express.urlencoded({ extended: true }));
 
