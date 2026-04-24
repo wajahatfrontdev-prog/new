@@ -33,29 +33,14 @@ const upload = multer({
   },
 });
 
-// Configure Multer for thumbnail image uploads
-const thumbnailStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/thumbnails/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, 'thumb-' + uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
+// Thumbnail upload — use memoryStorage (Vercel has no persistent disk)
 const uploadThumbnail = multer({
-  storage: thumbnailStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for images
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = /^image\//.test(file.mimetype);
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed!'));
-    }
+    if (mimetype) return cb(null, true);
+    cb(new Error('Only image files are allowed!'));
   },
 });
 
@@ -82,17 +67,18 @@ router.post('/videos/upload', protect, upload.single('video'), (req, res) => {
   });
 });
 
-// Thumbnail image upload endpoint
+// Thumbnail image upload — returns base64 data URL (Vercel-compatible, no disk needed)
 router.post('/thumbnails/upload', protect, uploadThumbnail.single('thumbnail'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No image file uploaded' });
   }
 
-  const thumbnailUrl = `${req.protocol}://${req.get('host')}/uploads/thumbnails/${req.file.filename}`;
+  const base64 = req.file.buffer.toString('base64');
+  const thumbnailUrl = `data:${req.file.mimetype};base64,${base64}`;
 
   res.status(200).json({
     success: true,
-    thumbnailUrl: thumbnailUrl,
+    thumbnailUrl,
     fileName: req.file.originalname,
     fileSize: req.file.size,
   });
