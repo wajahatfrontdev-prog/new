@@ -1,10 +1,11 @@
 const express = require('express');
 const { protect } = require('../middleware/authMiddleware');
-const { createFromCart, getMyOrders, getPharmacyOrders, getOrderById, updateOrderStatus, cancelOrder } = require('../controllers/pharmacyOrderController');
+const { createFromCart, createFromPrescription, getMyOrders, getPharmacyOrders, getOrderById, updateOrderStatus, cancelOrder } = require('../controllers/pharmacyOrderController');
 
 const router = express.Router();
 
 router.post('/', protect, createFromCart);
+router.post('/prescription', protect, createFromPrescription);
 router.get('/my', protect, getMyOrders);
 router.get('/pharmacy/list', protect, getPharmacyOrders);
 router.get('/:id', protect, getOrderById);

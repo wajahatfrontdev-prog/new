@@ -8,6 +8,41 @@ const makeOrderNumber = () => {
   return `PO-${Date.now().toString().slice(-6)}-${part}`;
 };
 
+exports.createFromPrescription = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { pharmacyId, medicines, prescriptionText, medicalRecordId, deliveryOption, address } = req.body;
+    const pharmacy = await Pharmacy.findById(pharmacyId);
+    if (!pharmacy) return res.status(404).json({ message: 'Pharmacy not found' });
+
+    // Build prescription items (no medicine ObjectId needed)
+    const prescriptionItems = Array.isArray(medicines) ? medicines.map(m => ({
+      productName: m.name || m.productName || 'Medicine',
+      quantity: 1,
+      price: 0,
+    })) : [];
+
+    const order = await PharmacyOrder.create({
+      pharmacy: pharmacyId,
+      user: userId,
+      items: [],
+      prescriptionItems,
+      prescriptionText: prescriptionText || medicines?.map(m => m.name).join(', ') || '',
+      medicalRecord: medicalRecordId || undefined,
+      totalAmount: 0,
+      deliveryOption: deliveryOption || 'pickup',
+      address: address || '',
+      orderNumber: makeOrderNumber(),
+      orderType: 'prescription',
+    });
+
+    res.status(201).json({ success: true, order });
+  } catch (error) {
+    console.error('Create Prescription Order Error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 exports.createFromCart = async (req, res) => {
   try {
     const userId = req.user._id;
